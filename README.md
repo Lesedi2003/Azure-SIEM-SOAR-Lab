@@ -112,76 +112,19 @@ The VM was intentionally exposed to the internet to attract unauthorized Remote 
 
 **Screenshot**
 
-![Virtual Machine](Screenshot/03.Virtual-Machine.png)
+![Virtual Machine](Screenshort/03.Virtual-Machine.png)
 
 ---
+## Configure Network Security Group
 
-### Microsoft Sentinel
+A Network Security Group (NSG) was configured to allow inbound RDP traffic on TCP port 3389.
 
+This intentionally exposed the virtual machine to the public internet, allowing attackers and automated scanning bots to attempt Remote Desktop authentication.
 
----
+While this configuration would be considered insecure in a production environment, it is appropriate for a controlled honeypot designed for security monitoring.
 
-## 🔎 Attack Activity
+![NSG]()
 
-### Attack Observations
-
-| Event | Description |
-|--------|-------------|
-| Failed Login | Event ID 4625 |
-| Successful Login | Event ID 4624 |
-| Privileged Logon | Event ID 4672 |
-
-<img width="1135" height="587" alt="resource group overview" src="https://github.com/user-attachments/assets/4fa5a654-fdfd-4f7f-8f1b-baf5097f9760" />
-
-```
-
----
-
-## 🔍 KQL Investigations
-
-### Failed Login Investigation
-
-```kql
-// Insert query here
-```
-
-**Purpose:**
-Identify failed authentication attempts.
-
-📷 Screenshot:
-```
-Insert screenshot here
-```
-
----
-
-## 🚨 Incident Investigation
-
-### Incident 001: Failed Authentication Attempts
-
-| Field | Value |
-|--------|-------|
-| Event ID | 4625 |
-| Severity | |
-| Source IP | |
-| Target Account | |
-| Logon Type | |
-
-### Analysis
-
-Describe your investigation findings here.
-
-### MITRE ATT&CK Mapping
-
-| Tactic | Technique |
-|---------|----------|
-| Credential Access | T1110 - Brute Force |
-
-### Conclusion
-
-Document your findings and response actions.
-
----
 
 ## 📚 Lessons Learned
 
