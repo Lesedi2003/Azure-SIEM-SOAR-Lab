@@ -21,18 +21,6 @@ This project demonstrates practical SOC skills including:
 
 The project simulates how a Security Operations Center monitors, investigates, and analyzes authentication attacks against exposed infrastructure.
 
-## 🎯 Objectives
-
-The objectives of this lab are to:
-
-- Deploy a Windows honeypot in Microsoft Azure
-- Configure Microsoft Sentinel as the SIEM platform
-- Collect security telemetry using Log Analytics Workspace
-- Monitor unauthorized login attempts
-- Investigate security events using KQL
-- Create and analyze security incidents
-- Develop practical SOC investigation skills
-
 ---
 
 ## 🏗️ Lab Architecture
@@ -40,43 +28,66 @@ The objectives of this lab are to:
 ```text
 Internet
     ↓
-Attackers
+Azure Public IP
     ↓
-Azure Windows VM (Honeypot)
+Network Security Group (Allow RDP)
     ↓
-Azure Monitor Agent
+Windows Virtual Machine (Honeypot)
     ↓
-Log Analytics Workspace
+Azure Monitor Agent (AMA)
     ↓
-Microsoft Sentinel
+Microsoft Sentinel (SIEM)
     ↓
-KQL Queries
+KQL Investigation
     ↓
-Incidents & Investigations
+GeoIP Watchlist
+    ↓
+Sentinel Workbook Dashboard
 ```
+### Data Flow
 
+1. Attackers on the Internet attempt to authenticate to the exposed Windows virtual machine.
+
+2. Windows records each authentication event inside the Windows Security Event Log.
+
+3. Azure Monitor Agent (AMA) continuously collects these Windows Security Events.
+
+4. The agent securely forwards the logs to Azure Log Analytics Workspace.
+
+5. Microsoft Sentinel uses the Log Analytics Workspace as its data source.
+
+6. Security analysts query the collected logs using Kusto Query Language (KQL).
+
+7. External GeoIP data is imported as a Sentinel Watchlist to enrich attacker IP addresses with geographical information.
+
+8. A Microsoft Sentinel Workbook visualizes attack origins on an interactive map.
 ---
 
 ## 🛠️ Technologies Used
 
 | Technology | Purpose |
 |------------|---------|
-| Microsoft Azure | Cloud infrastructure |
-| Microsoft Sentinel | SIEM platform |
-| Log Analytics Workspace | Log collection and storage |
-| Windows Virtual Machine | Honeypot |
-| Network Security Group | Network configuration |
-| Kusto Query Language (KQL) | Log analysis |
-| Azure Monitor Agent | Data collection |
+| Microsoft Azure | Cloud Infrastructure |
+| Azure Virtual Machine | Windows Honeypot |
+| Azure Virtual Network | Networking |
+| Network Security Group | Traffic Filtering |
+| Azure Monitor Agent (AMA) | Log Collection |
+| Azure Log Analytics Workspace | Central Log Storage |
+| Microsoft Sentinel | SIEM Platform |
+| Kusto Query Language (KQL) | Threat Hunting |
+| GeoLite2 GeoIP Database | IP Geolocation |
+| Microsoft Sentinel Watchlists | Threat Enrichment |
+| Sentinel Workbooks | Dashboards & Visualization |
 
 ---
 
 ## ⚙️ Environment Setup
 
-### Resource Group
+## Step 1 – Create Resource Group
 
-**Purpose:**
-Logical container used to organize all Azure resources for the SOC lab.
+A dedicated Azure Resource Group was created to logically organize all resources used throughout the lab.
+
+The Resource Group simplifies management by allowing every component of the lab to be deployed, monitored, and deleted together if required.
 
 ![Resourec Group](Screenshort/01.Resource-group-overview.png)
 
@@ -84,19 +95,15 @@ Logical container used to organize all Azure resources for the SOC lab.
 
 ### Windows Honeypot VM
 
-**Purpose:**
-An internet-facing Windows virtual machine configured to attract unauthorized login attempts.
+## Step 2 – Create Virtual Network
 
-**Configuration:**
+An Azure Virtual Network (VNet) was deployed to provide network connectivity for the Windows virtual machine.
 
-| Setting | Value |
-|---------|--------|
-| Operating System | |
-| Region | |
-| Public IP | |
-| Monitoring | Enabled |
+The virtual machine receives its private IP address from this virtual network while also exposing a public IP address for internet accessibility.
 
-screenshot
+**Screenshot**
+
+![Virtual Network](Screenshots/02.Virtual-network.png)
 
 ```
 
