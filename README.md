@@ -83,7 +83,7 @@ Sentinel Workbook Dashboard
 
 ## ⚙️ Environment Setup
 
-## Step 1 – Create Resource Group
+## Create Resource Group
 
 A dedicated Azure Resource Group was created to logically organize all resources used throughout the lab.
 
@@ -93,30 +93,27 @@ The Resource Group simplifies management by allowing every component of the lab 
 
 ---
 
-### Windows Honeypot VM
 
-## Step 2 – Create Virtual Network
+## Create Virtual Network
 
 An Azure Virtual Network (VNet) was deployed to provide network connectivity for the Windows virtual machine.
 
 The virtual machine receives its private IP address from this virtual network while also exposing a public IP address for internet accessibility.
 
-![Virtual Network](Screenshot/02.Virtual-Network.png)
+![Virtual Network](Screenshort/02.Virtual-Network.png)
 
 ```
 
 ---
+## Deploy Windows Virtual Machine
 
-### Network Security Group
+A Windows Server virtual machine was deployed to act as the honeypot.
 
-**Purpose:**
-Configured to allow inbound RDP traffic to attract brute-force attacks.
+The VM was intentionally exposed to the internet to attract unauthorized Remote Desktop Protocol (RDP) authentication attempts.
 
-📷 Screenshot:
+![Virtual Machine](
+
 ```
-Insert screenshot here
-```
-
 ---
 
 ### Log Analytics Workspace
