@@ -101,9 +101,7 @@ An Azure Virtual Network (VNet) was deployed to provide network connectivity for
 
 The virtual machine receives its private IP address from this virtual network while also exposing a public IP address for internet accessibility.
 
-**Screenshot**
-
-![Virtual Network](Screenshots/02.Virtual-network.png)
+![Virtual Network](Screenshot/02.Virtual-Network.png)
 
 ```
 
