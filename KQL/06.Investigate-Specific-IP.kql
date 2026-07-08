@@ -1,3 +1,6 @@
 SecurityEvent
 | where IpAddress == "45.142.193.145"
 | order by TimeGenerated desc
+
+Investigates all activity associated with a specific attacker IP address.
+This query can be used after identifying a suspicious IP to review every authentication attempt originating from that source.
