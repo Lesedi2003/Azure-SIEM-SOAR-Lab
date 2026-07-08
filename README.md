@@ -33,29 +33,29 @@ This diagram shows how security events move from the virtual machine into Micros
                            Internet
                                │
                                ▼
-                     Windows Server VM
-                         (Honeypot)
+                       Windows Server VM
+                           (Honeypot)
                                │
-                  Windows Security Events
+                    Windows Security Events
                          (Event Viewer)
                                │
                                ▼
-                 Azure Monitor Agent (AMA)
+                    Azure Monitor Agent (AMA)
                                │
                                ▼
-                Log Analytics Workspace
-                      (SecurityEvent)
+                   Log Analytics Workspace
+                        (SecurityEvent)
                                │
                                ▼
-                  Microsoft Sentinel (SIEM)
+                   Microsoft Sentinel (SIEM)
                                │
-          KQL Queries & Threat Investigation
-                               │
-                               ▼
-                GeoIP Watchlist Enrichment
+              KQL Queries & Threat Investigation
                                │
                                ▼
-             Microsoft Sentinel Workbook
+                  GeoIP Watchlist Enrichment
+                               │
+                               ▼
+                  Microsoft Sentinel Workbook
 ```
 
 # 📌 Project Scenario
