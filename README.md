@@ -126,6 +126,8 @@ While this configuration would be considered insecure in a production environmen
 ![NSG](Screenshort/04.NSG-Allow-Traffic.png)
 
 
+
+
 ## 📚 Lessons Learned
 
 - Learned how Microsoft Sentinel collects and analyzes security telemetry.
