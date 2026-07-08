@@ -201,7 +201,7 @@ The agent securely collects telemetry from the operating system and sends it to 
 
 AMA replaces the legacy Log Analytics Agent and provides improved performance and flexibility.
 
-![Azure Monitor Agent](Screenshot/12.Azure-Monitor-Agent.png)
+![Azure Monitor Agent](Screenshots/11.AMA.png)
 
 ---
 
