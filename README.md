@@ -286,7 +286,7 @@ Instead of displaying only IP addresses, the query now returns additional inform
 
 This process is known as **data enrichment**, where external intelligence is added to raw log data to improve investigations.
 
-![GeoIP Query](Screenshot/18.GeoIP-KQL.png)
+![GeoIP Query](Screenshots/18.Specified-IPadress-Location.png)
 
 ---
 
