@@ -216,9 +216,6 @@ The following query displays all Windows Security Events:
 
 ---
 
-# Failed Login Query
-
-
 ## Investigate Failed Authentication Attempts
 
 Failed authentication attempts were identified using Event ID **4625**.
