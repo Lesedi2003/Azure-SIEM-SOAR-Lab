@@ -255,7 +255,7 @@ This dataset would later be uploaded into Microsoft Sentinel as a Watchlist.
 
 The watchlist enables KQL queries to automatically enrich authentication events with geographical information.
 
-![GeoIP Dataset](Screenshot/16.GeoIP-Spreadsheet.png)
+![GeoIP Dataset](Screenshots/15.geo-spreadsheet.png)
 
 ---
 ## Create Microsoft Sentinel Watchlist
