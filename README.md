@@ -269,6 +269,10 @@ In this lab, the watchlist allows source IP addresses to be mapped to geographic
 ![Watchlist](Screenshots/16.Watchlist.png)
 
 ---
+
+Screenshots/17.Location-Detected-Logs.png   TO TELL!!!!
+
+
 ## Enrich Authentication Logs with GeoIP Data
 
 The failed authentication logs were joined with the GeoIP Watchlist using the `ipv4_lookup()` function.
