@@ -227,7 +227,7 @@ Filtering these events allows analysts to identify brute-force attacks, password
 
 The query also displays the source IP address responsible for each authentication attempt.
 
-![Failed Login Query](Screenshot/14.Failed-Login-IP.png)
+![Failed Login Query](Screenshots/13.Failed-Logon.png)
 
 ---
 ## Validate Attacker IP Address
