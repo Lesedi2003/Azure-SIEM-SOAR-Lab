@@ -133,7 +133,186 @@ This allows inbound network traffic to reach the operating system without being 
 
 > **Note:** Disabling the firewall is intentionally insecure and should never be performed on production systems. It was done solely for this controlled honeypot lab.
 
-![Firewall Disabled](Screenshots/06.Disable-Firewall.png)
+![Firewall Disabled](Screenshots/06.Diable-Windows-Firewall.png)
+
+## Verify Internet Reachability
+
+The virtual machine was tested by sending ICMP echo requests (ping) from the host computer.
+
+Successful replies confirmed that the virtual machine was reachable from the public internet after the firewall was disabled.
+
+This verified that external systems would also be able to communicate with the honeypot.
+
+![Ping Test](Screenshot/07.Ping-Test.png)
+
+## Generate Failed Login Events
+
+To verify that Windows Security logs were being generated, an intentional failed login attempt was performed against the virtual machine.
+
+Windows recorded the authentication failure in the Security Event Log using **Event ID 4625 (Failed Logon)**.
+
+These events would later be collected by Azure Monitor Agent and forwarded to the Log Analytics Workspace for analysis.
+
+![Windows Event Viewer - Failed Login](Screenshot/08.EventViewer-4625.png)
+
+---
+
+## Generate Successful Login Events
+
+A successful authentication was also performed to demonstrate the difference between successful and failed authentication events.
+
+Windows records successful logons using **Event ID 4624 (Successful Logon)**.
+
+Having both successful and failed authentication events provides useful context when investigating suspicious login activity.
+
+![Windows Event Viewer - Successful Login](Screenshot/09.EventViewer-4624.png)
+
+---
+
+## Configure Log Analytics Workspace
+
+A Log Analytics Workspace (LAW) was created to centrally collect and store security telemetry from Azure resources.
+
+The Windows virtual machine was connected to the workspace so that Windows Security Events could be ingested and queried using Kusto Query Language (KQL).
+
+This workspace serves as the primary data source for Microsoft Sentinel.
+
+![Log Analytics Workspace](Screenshot/10.Log-Analytics-Workspace.png)
+
+---
+
+## Enable Windows Security Event Collection
+
+Windows Security Event collection was enabled within Microsoft Sentinel.
+
+This configuration allows Windows authentication events, including successful and failed logons, to be forwarded into the Log Analytics Workspace.
+
+Without enabling this connector, Windows Security Events would not be available for investigation.
+
+![Windows Security Events Connector](Screenshot/11.Windows-Security-Events.png)
+
+---
+
+## Install Azure Monitor Agent (AMA)
+
+The Azure Monitor Agent (AMA) was installed on the virtual machine.
+
+The agent securely collects telemetry from the operating system and sends it to Azure Monitor and the Log Analytics Workspace.
+
+AMA replaces the legacy Log Analytics Agent and provides improved performance and flexibility.
+
+![Azure Monitor Agent](Screenshot/12.Azure-Monitor-Agent.png)
+
+---
+
+## Verify Security Event Ingestion
+
+Once the Azure Monitor Agent began forwarding telemetry, Kusto Query Language (KQL) was used to verify that Windows Security Events were successfully arriving in the Log Analytics Workspace.
+
+The following query displays all Windows Security Events:
+
+kql
+SecurityEvent
+
+
+---
+
+# Failed Login Query
+
+
+## Investigate Failed Authentication Attempts
+
+Failed authentication attempts were identified using Event ID **4625**.
+
+Filtering these events allows analysts to identify brute-force attacks, password guessing attempts, and unauthorized access attempts.
+
+The query also displays the source IP address responsible for each authentication attempt.
+
+![Failed Login Query](Screenshot/14.Failed-Login-IP.png)
+
+---
+## Validate Attacker IP Address
+
+One of the external IP addresses observed in the failed authentication logs was investigated using a public IP reputation service.
+
+This provides additional context such as:
+
+- Country
+- Internet Service Provider (ISP)
+- Organization
+- ASN
+
+Public IP enrichment helps analysts understand where suspicious activity originates before performing further investigation.
+
+![IP Lookup](Screenshot/15.IP-Lookup.png)
+
+---
+
+## Prepare GeoIP Watchlist
+
+A GeoIP database containing public IP ranges and geographic information was downloaded.
+
+This dataset would later be uploaded into Microsoft Sentinel as a Watchlist.
+
+The watchlist enables KQL queries to automatically enrich authentication events with geographical information.
+
+![GeoIP Dataset](Screenshot/16.GeoIP-Spreadsheet.png)
+
+---
+## Create Microsoft Sentinel Watchlist
+
+The GeoIP dataset was uploaded into Microsoft Sentinel as a Watchlist.
+
+Watchlists provide additional reference data that can be joined with log data during investigations.
+
+In this lab, the watchlist allows source IP addresses to be mapped to geographic locations.
+
+![Watchlist](Screenshot/17.Watchlist.png)
+
+---
+## Enrich Authentication Logs with GeoIP Data
+
+The failed authentication logs were joined with the GeoIP Watchlist using the `ipv4_lookup()` function.
+
+Instead of displaying only IP addresses, the query now returns additional information including:
+
+- City
+- Country
+- Latitude
+- Longitude
+
+This process is known as **data enrichment**, where external intelligence is added to raw log data to improve investigations.
+
+![GeoIP Query](Screenshot/18.GeoIP-KQL.png)
+
+---
+
+## Create Microsoft Sentinel Workbook
+
+A custom Microsoft Sentinel Workbook was created to visualize authentication attempts.
+
+The workbook transforms raw log data into interactive charts and maps, allowing analysts to quickly identify attack trends and geographical patterns.
+
+![Workbook Creation](Screenshot/19.Workbook-Creation.png)
+
+---
+
+## Visualize Global Attack Activity
+
+The completed workbook displays failed authentication attempts on a world map.
+
+Each point represents one or more failed login attempts originating from a specific geographic location.
+
+Selecting a location reveals additional information including:
+
+- Source IP address
+- Country
+- City
+- Number of authentication attempts
+
+This visualization provides analysts with an intuitive way to understand where attacks are originating and identify high-volume attack sources.
+
+![Attack Map](Screenshot/20.Attack-Map.png)
 
 ---
 
