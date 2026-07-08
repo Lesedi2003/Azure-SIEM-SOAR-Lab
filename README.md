@@ -243,7 +243,7 @@ This provides additional context such as:
 
 Public IP enrichment helps analysts understand where suspicious activity originates before performing further investigation.
 
-![IP Lookup](Screenshot/15.IP-Lookup.png)
+![IP Lookup](Screenshots/14.IPLookUp.png)
 
 ---
 
