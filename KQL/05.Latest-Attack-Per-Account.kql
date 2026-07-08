@@ -10,3 +10,6 @@ Activity,
 IpAddress,
 Attempts
 | order by TimeGenerated desc
+
+Displays only the latest failed authentication attempt for each account while also showing the total number of attempts made against that account.
+This provides a concise view of recent attacker activity without displaying duplicate log entries.
