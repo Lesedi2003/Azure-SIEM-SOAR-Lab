@@ -328,7 +328,7 @@ Rather than storing logs itself, Sentinel uses the Log Analytics Workspace as it
 
 Once connected, Sentinel can search, investigate, visualize, and alert on the security events stored inside the workspace.
 
-![Microsoft Sentinel](Screenshots/10.Sentinel-Connected.png)
+![Microsoft Sentinel](Screenshots/Sentinel-Connected.png)
 
 ---
 
@@ -360,63 +360,6 @@ Without the Azure Monitor Agent, Windows would continue recording events locally
 
 ---
 
-## 📊 Understanding the SecurityEvent Table
-
-One question I asked while building this lab was:
-
-> **Where does the `SecurityEvent` table actually come from?**
-
-The answer is surprisingly simple.
-
-Windows already records authentication events inside **Event Viewer**.
-
-The Azure Monitor Agent collects those events and sends them to the Log Analytics Workspace.
-
-As the logs arrive, Azure automatically stores them inside a table named **SecurityEvent**.
-
-This means the table wasn't created manually.
-
-It is automatically populated with Windows Security Events as they are collected from the virtual machine.
-
-Once the events are stored inside the SecurityEvent table, Microsoft Sentinel can search them using **Kusto Query Language (KQL).**
-
-The first query I ran simply displayed the collected security events.
-
-```kusto
-SecurityEvent
-```
-
-This confirmed that Microsoft Sentinel was successfully receiving Windows Security Events from the honeypot.
-
-![SecurityEvent Query](Screenshots/12.Loga-generated.png)
-
----
-
-> 💡 **How the data flows through the environment**
-
-```text
-Windows Event Viewer
-        │
-        ▼
-Azure Monitor Agent (AMA)
-        │
-        ▼
-Log Analytics Workspace
-(SecurityEvent Table)
-        │
-        ▼
-Microsoft Sentinel
-        │
-        ▼
-KQL Queries & Investigation
-```
-
-Understanding this workflow was one of the biggest learning points of the project.
-
-Rather than thinking of Microsoft Sentinel as a tool that magically "knows" what's happening on a machine, I learned that every investigation begins with Windows generating security events, the Azure Monitor Agent collecting them, and the Log Analytics Workspace storing them before Sentinel can analyze them.
-
----
-
 ## ✅ Verifying Log Collection
 
 To confirm that everything was configured correctly, I queried the SecurityEvent table and verified that Windows authentication events were appearing inside Microsoft Sentinel.
@@ -430,9 +373,7 @@ Seeing these events arrive successfully confirmed that:
 
 With log collection successfully configured, the environment was now ready for threat hunting using Kusto Query Language (KQL).
 
----
-
-## Verify Security Event Ingestion
+### Verify Security Event Ingestion
 
 Once the Azure Monitor Agent began forwarding telemetry, Kusto Query Language (KQL) was used to verify that Windows Security Events were successfully arriving in the Log Analytics Workspace.
 
@@ -442,105 +383,193 @@ The following query displays all Windows Security Events:
 
 
 ---
+# 🔍 Investigating Attack Activity
 
-## Investigate Failed Authentication Attempts
+With Windows Security Events successfully flowing into Microsoft Sentinel, I could begin investigating the activity being recorded against the honeypot.
 
-Failed authentication attempts were identified using Event ID **4625**.
+The primary objective during this stage was to identify failed authentication attempts, investigate where they were coming from, and enrich the collected data to gain a better understanding of the attacks.
 
-Filtering these events allows analysts to identify brute-force attacks, password guessing attempts, and unauthorized access attempts.
-
-The query also displays the source IP address responsible for each authentication attempt.
-
-![Failed Login Query](Screenshots/13.Failed-Logon.png)
+Kusto Query Language (KQL) was used throughout this investigation to search, filter, and analyze the collected logs.
 
 ---
-## Validate Attacker IP Address
 
-One of the external IP addresses observed in the failed authentication logs was investigated using a public IP reputation service.
+## ❌ Investigating Failed Logon Attempts
 
-This provides additional context such as:
+One of the most common indicators of suspicious activity is repeated failed login attempts.
+
+Windows records these events using **Event ID 4625**, making them easy to identify with KQL.
+
+```kusto
+SecurityEvent
+| where EventID == 4625
+```
+
+This query returns every failed authentication attempt recorded by the virtual machine.
+> ⚠️ **Note:**
+>
+> Earlier in this project, I examined Windows Security Events directly on the virtual machine using **Event Viewer** to understand how Windows records authentication activity.
+>
+> In this section, I use the **same event IDs and KQL queries**, but this time the investigation is performed against the **SecurityEvent** table in the **Log Analytics Workspace**. These are the same Windows Security Events, now collected by the Azure Monitor Agent and made available in Microsoft Sentinel for centralized analysis.
+>
+> This demonstrates how security events move from a single Windows machine into a SIEM, where they can be searched, investigated, and correlated using KQL.
+
+Each event contains useful information including:
+
+- Time of the attempt
+- Username used
+- Source IP address
+- Authentication type
+- Logon type
+
+These details help analysts determine whether login attempts are likely to be legitimate user mistakes or malicious activity such as brute-force attacks.
+
+![Failed Logons](Screenshots/13.Failed-Logon.png)
+
+---
+
+## 🌐 Investigating Attacker IP Addresses
+
+After identifying failed login attempts, I investigated the source IP addresses responsible for the activity.
+
+Looking at the IP address alone can already reveal useful information, including:
+
+- Whether multiple usernames are being targeted
+- Whether one IP is generating repeated login attempts
+- Whether attacks originate from the same location
+
+To better understand one of the attackers, I copied one of the observed IP addresses and searched it using a public IP lookup service.
+
+This provided additional information such as:
 
 - Country
 - Internet Service Provider (ISP)
-- Organization
-- ASN
+- Network owner
+- Autonomous System Number (ASN)
 
-Public IP enrichment helps analysts understand where suspicious activity originates before performing further investigation.
+Although this information was gathered outside Microsoft Sentinel, it provided useful context during the investigation.
 
 ![IP Lookup](Screenshots/14.IPLookUp.png)
 
 ---
 
-## Prepare GeoIP Watchlist
+# 🌍 Adding Geographic Context
 
-A GeoIP database containing public IP ranges and geographic information was downloaded.
+Knowing an IP address is useful.
 
-This dataset would later be uploaded into Microsoft Sentinel as a Watchlist.
+Knowing **where it came from** is even more useful.
 
-The watchlist enables KQL queries to automatically enrich authentication events with geographical information.
+To enrich the authentication logs with geographic information, I downloaded a GeoIP dataset and uploaded it into Microsoft Sentinel as a **Watchlist**.
+
+According to Microsoft, a **Watchlist** enables the collection of data from external sources so it can be correlated with events in a Microsoft Sentinel environment.
+
+In this project, the Watchlist acts as a reference table that Microsoft Sentinel uses to match attacker IP addresses with geographic information such as:
+
+- Country
+- City
+- Latitude
+- Longitude
+
+This additional context makes it much easier to understand where authentication attempts are originating and helps identify patterns during the investigation.
 
 ![GeoIP Dataset](Screenshots/15.geo-spreadsheet.png)
 
 ---
-## Create Microsoft Sentinel Watchlist
 
-The GeoIP dataset was uploaded into Microsoft Sentinel as a Watchlist.
+## 📋 Creating the GeoIP Watchlist
 
-Watchlists provide additional reference data that can be joined with log data during investigations.
+After preparing the dataset, I created a Microsoft Sentinel Watchlist named **geoip**.
 
-In this lab, the watchlist allows source IP addresses to be mapped to geographic locations.
+This allows KQL to compare attacker IP addresses against the GeoIP database and automatically return location information.
 
-![Watchlist](Screenshots/16.Watchlist.png)
+Instead of only seeing an IP address, I could now identify the country and city associated with each attack.
+
+![GeoIP Watchlist](Screenshots/16.Watchlist.png)
 
 ---
-GetWachilst Displayed to see that the accounts now have location with the _GetWatchList("geoip") query
+## 📋 Verifying the GeoIP Watchlist
 
-![Get watchlist](Screenshots/17.Location-Detected-Logs.png) 
+After creating the GeoIP Watchlist, I verified that Microsoft Sentinel had successfully imported the data.
 
+Using the `_GetWatchlist()` function, I was able to retrieve the contents of the Watchlist and confirm that it contained the expected geographic information.
 
-## Enrich Authentication Logs with GeoIP Data
+The Watchlist now included details such as:
 
-The failed authentication logs were joined with the GeoIP Watchlist using the `ipv4_lookup()` function.
-
-Instead of displaying only IP addresses, the query now returns additional information including:
-
-- City
+- IP address ranges (network)
 - Country
+- City
 - Latitude
 - Longitude
 
-This process is known as **data enrichment**, where external intelligence is added to raw log data to improve investigations.
+This verification step confirmed that the Watchlist was ready to be used for data enrichment during the investigation.
 
-![GeoIP Query](Screenshots/18.Specified-IPadress-Location.png)
-
----
-
-## Create Microsoft Sentinel Workbook
-
-A custom Microsoft Sentinel Workbook was created to visualize authentication attempts.
-
-The workbook transforms raw log data into interactive charts and maps, allowing analysts to quickly identify attack trends and geographical patterns.
-
-![Workbook Creation](Screenshots/19.workbook-creation.png)
+```kusto
+_GetWatchlist("geoip")
+```
+![Get Watchlist](Location-Detected-Logs.png)
 
 ---
 
-## Visualize Global Attack Activity
+## 🧠 Enriching Security Events with KQL
 
-The completed workbook displays failed authentication attempts on a world map.
+Once the Watchlist had been uploaded, I used the `ipv4_lookup()` function to combine the failed authentication logs with the GeoIP dataset.
 
-Each point represents one or more failed login attempts originating from a specific geographic location.
+```kusto
+let GeoIPDB_FULL = _GetWatchlist("geoip");
 
-Selecting a location reveals additional information including:
+let WindowsEvents =
+SecurityEvent
+| where EventID == 4625
+| evaluate ipv4_lookup(GeoIPDB_FULL, IpAddress, network);
 
-- Source IP address
-- Country
-- City
-- Number of authentication attempts
+WindowsEvents
+| project
+    TimeGenerated,
+    Account,
+    IpAddress,
+    Country = countryname,
+    City = cityname,
+    Latitude = latitude,
+    Longitude = longitude
+```
 
-This visualization provides analysts with an intuitive way to understand where attacks are originating and identify high-volume attack sources.
+This process is known as **data enrichment**.
 
-![Attack Map](Screenshots/20.VM-workbook-Graph.png)
+Rather than replacing the original logs, enrichment adds additional context that makes investigations much more meaningful.
+
+For example, instead of only seeing:
+
+```
+5.228.117.132
+```
+
+I could now see something like:
+
+```
+IP Address: 5.228.117.132
+Country: Russia
+City: Moscow
+Latitude: ...
+Longitude: ...
+```
+
+This makes it much easier to understand where authentication attempts are originating.
+
+![GeoIP KQL Query](Screenshots/18.GeoIP-KQL.png)
+
+---
+
+## 💡 What I Learned
+
+Before completing this section, I assumed Microsoft Sentinel automatically knew where every IP address was located.
+
+Building this lab taught me that this isn't the case.
+
+Microsoft Sentinel only knows what exists in the logs.
+
+To add geographic information, the logs first need to be enriched using external reference data such as a GeoIP Watchlist.
+
+Understanding this concept helped me appreciate how security analysts combine multiple data sources to build a clearer picture during an investigation.
+
 
 ---
 
