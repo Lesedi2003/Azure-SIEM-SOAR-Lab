@@ -691,7 +691,7 @@ Thank you for taking the time to explore this project.
 
 ## 👨‍💻 Author
 
-**Lesedi Mogoane**
+**Lesedi**
 
 - SC-200: Microsoft Security Operations Analyst
 - SC-300: Microsoft Identity and Access Administrator
