@@ -554,7 +554,7 @@ Longitude: ...
 
 This makes it much easier to understand where authentication attempts are originating.
 
-![GeoIP KQL Query](Screenshots/18.GeoIP-KQL.png)
+![GeoIP KQL Query](Screenshots/18.Specified-IPadress-Location.png)
 
 ---
 
@@ -565,6 +565,7 @@ Before completing this section, I assumed Microsoft Sentinel automatically knew 
 Building this lab taught me that this isn't the case.
 
 Microsoft Sentinel only knows what exists in the logs.
+Rather than thinking of Microsoft Sentinel as a tool that magically "knows" what's happening on a machine, I learned that every investigation begins with Windows generating security events, the Azure Monitor Agent collecting them, and the Log Analytics Workspace storing them before Sentinel can analyze them.
 
 To add geographic information, the logs first need to be enriched using external reference data such as a GeoIP Watchlist.
 
@@ -573,22 +574,118 @@ Understanding this concept helped me appreciate how security analysts combine mu
 
 ---
 
-## 📚 Lessons Learned
+# 🌍 Visualizing Attack Activity
 
-- Learned how Microsoft Sentinel collects and analyzes security telemetry.
-- Gained experience using KQL for threat investigation.
-- Developed understanding of Windows authentication events.
-- Practiced SOC investigation workflows.
+After enriching the authentication logs with geographic information, the final step was to visualize the collected data using a **Microsoft Sentinel Workbook**.
+
+A Workbook provides an interactive dashboard that transforms raw log data into charts, tables, and maps, making it much easier to identify attack patterns and communicate findings.
 
 ---
 
-## 🚀 Future Improvements
+## 📊 Creating the Workbook
 
-- Implement Sentinel Analytics Rules
-- Create automated SOAR playbooks
-- Integrate Microsoft Defender
-- Simulate additional attack scenarios
-- Develop custom detection rules
+Using Microsoft Sentinel, I created a Workbook that queries the enriched authentication logs and displays them in a geographical view.
+
+The workbook uses the latitude and longitude values from the GeoIP Watchlist to plot failed authentication attempts on a world map.
+
+This provides a much clearer view of where attack activity is originating compared to viewing raw log entries alone.
+
+![Workbook Creation](Screenshots/19.workbook-creation.png)
+
+---
+
+## 🗺️ Investigating Attack Locations
+
+Once the workbook was configured, the authentication attempts were displayed on an interactive world map.
+
+Each marker represents one or more failed authentication attempts from a specific location.
+
+Selecting a marker displays additional information about the attacks, including:
+
+- Source IP Address
+- Country
+- City
+- Number of authentication attempts
+
+This visualization makes it easier to identify attack hotspots and understand where malicious activity is originating.
+It’s oddly satisfying to see the attacks light up across the globe.
+
+![Attack Map](Screenshots/20.VM-workbook-Graph.png)
+
+---
+
+# 🔍 Key Findings
+
+During this project, the internet-facing virtual machine began receiving authentication attempts shortly after it was exposed to the internet.
+
+Some of the observations included:
+
+- Multiple failed Remote Desktop authentication attempts (Event ID **4625**)
+- Repeated attempts against common usernames such as **Administrator** and **Admin** as well as **Test**
+- Authentication attempts originating from multiple public IP addresses
+- Geographic distribution of attack sources using GeoIP enrichment
+- Successful collection and investigation of Windows Security Events using Microsoft Sentinel
+
+These findings demonstrate how quickly publicly accessible systems attract automated scanning and authentication attempts.
+
+---
+
+# 🎓 Skills Demonstrated
+
+Through this project, I gained practical experience with:
+
+- Microsoft Azure
+- Microsoft Sentinel (SIEM)
+- Azure Monitor Agent (AMA)
+- Log Analytics Workspace
+- Windows Security Event Logging
+- Kusto Query Language (KQL)
+- Threat Investigation
+- Log Analysis
+- GeoIP Data Enrichment
+- Microsoft Sentinel Watchlists
+- Microsoft Sentinel Workbooks
+
+---
+
+# 💡 Lessons Learned
+
+Before completing this project, I understood the individual Azure services but didn't fully understand how they worked together in a security monitoring environment.
+
+Building this lab helped me understand the complete lifecycle of a security event:
+
+1. Windows generates a Security Event.
+2. The Azure Monitor Agent collects the event.
+3. The event is sent to the Log Analytics Workspace.
+4. Azure stores the event in the **SecurityEvent** table.
+5. Microsoft Sentinel queries the logs using KQL.
+6. Watchlists enrich the data with additional context.
+7. Workbooks visualize the investigation results.
+
+Understanding this workflow gave me a much clearer picture of how Microsoft Sentinel functions as a cloud-native SIEM platform.
+
+---
+
+# 🚀 Future Improvements
+
+This project focused on collecting and investigating authentication events using Microsoft Sentinel.
+
+With the continuation of developing my SOC skills, I plan to expand this lab by implementing additional Microsoft security technologies, including:
+
+- ⚡ Microsoft Sentinel Automation Rules
+- 🤖 Microsoft Sentinel SOAR Playbooks using Azure Logic Apps
+- 🚨 Automated incident creation and response
+- 🛡️ Microsoft Defender for Endpoint integration
+- 📧 Microsoft Defender for Office 365 integration
+- ☁️ Microsoft Defender for Cloud integration
+- 📈 Advanced threat hunting using KQL
+- 🔔 Custom analytics rules and alerting
+
+---
+
+# 🙏 Thank You
+
+Thank you for taking the time to explore this project.
 
 ---
 
