@@ -628,4 +628,6 @@ Using Kusto Query Language (KQL), security events were queried and analyzed to i
 
 This implementation established the detection and monitoring foundation of a modern Security Operations Center (SOC). In the next phase of the project, the environment will be enhanced with Security Orchestration, Automation, and Response (SOAR) capabilities by implementing analytics rules, incident management, automation rules, and Logic App playbooks to automate threat response workflows.
 
+![Part2-SOAR](
+
 
