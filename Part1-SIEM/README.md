@@ -1,15 +1,27 @@
-# 🎯 Project Objectives
+# 📌 Project Scenario
 
-The main goals of this project were to:
+Imagine you're a SOC analyst responsible for monitoring a Windows server that's connected to the internet.
 
-- Build a cloud-based SOC lab using Microsoft Azure.
+The first question isn't **"Are we under attack?"**
+
+It's **"What activity is happening on this machine?"**
+
+To answer that question, security events first need to be collected, stored, and analyzed.
+
+In this Lab, I built a simple SOC environment that allows exactly that.
+
+As soon as the virtual machine was exposed to the internet, it began receiving unsolicited authentication attempts from automated scanners and bots. Microsoft Sentinel collected those events, allowing them to be investigated using KQL, enriched with geographic information, and visualized through an interactive dashboard.
+
+# 🎯 Lab Objectives
+
+The main goals of this lab were to:
+
 - Deploy an internet-facing Windows honeypot.
 - Configure Microsoft Sentinel as the SIEM platform.
 - Collect Windows Security Events using the Azure Monitor Agent (AMA).
 - Investigate authentication events using Kusto Query Language (KQL).
 - Enrich attacker IP addresses with geographic information.
 - Visualize attack activity using Microsoft Sentinel Workbooks.
-- Gain practical, hands-on experience with Microsoft security technologies.
 
 ---
 
@@ -43,20 +55,6 @@ This diagram shows how security events move from the virtual machine into Micros
                                ▼
                   Microsoft Sentinel Workbook
 ```
-
-# 📌 Project Scenario
-
-Imagine you're a SOC analyst responsible for monitoring a Windows server that's connected to the internet.
-
-The first question isn't **"Are we under attack?"**
-
-It's **"What activity is happening on this machine?"**
-
-To answer that question, security events first need to be collected, stored, and analyzed.
-
-In this project, I built a simple SOC environment that allows exactly that.
-
-As soon as the virtual machine was exposed to the internet, it began receiving unsolicited authentication attempts from automated scanners and bots. Microsoft Sentinel collected those events, allowing them to be investigated using KQL, enriched with geographic information, and visualized through an interactive dashboard.
 
 ---
 
