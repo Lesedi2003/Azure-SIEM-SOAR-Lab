@@ -68,7 +68,7 @@ Once Microsoft Sentinel creates an incident, the Automation Rule immediately lau
 
 ---
 
-# 🚨 Creating the Analytics Rule
+## 🚨 Creating the Analytics Rule
 
 Everything within the SOAR workflow begins with an **Analytics Rule**.
 
@@ -88,7 +88,7 @@ This incident becomes the starting point for the automated response workflow imp
 
 ---
 
-# 🚨 Security Incident Created
+## 🚨 Security Incident Created
 
 After deploying the Analytics Rule, I generated multiple failed Remote Desktop login attempts against the honeypot virtual machine.
 
@@ -106,7 +106,7 @@ This capability allows Microsoft Sentinel to move beyond simply detecting threat
 
 ---
 
-# ⚙️ Building the Logic App Playbook
+## ⚙️ Building the Logic App Playbook
 
 With Microsoft Sentinel successfully generating security incidents, the next step was to automate the response.
 
@@ -330,7 +330,7 @@ This demonstrates one of the primary advantages of SOAR—reducing response time
 
 ---
 
-# 🧪 Testing the Automated Workflow
+## 🧪 Testing the Automated Workflow
 
 With the Analytics Rule, Playbook, and Automation Rule all configured, the final step was to verify that the complete workflow functioned as expected.
 
