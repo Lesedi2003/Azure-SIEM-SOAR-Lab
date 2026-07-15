@@ -1,3 +1,4 @@
+➡️ **[Go to Part 2 – SOAR](../Part2-SOAR/README.md)**
 # 📌 Project Scenario
 
 Imagine you're a SOC analyst responsible for monitoring a Windows server that's connected to the internet.
