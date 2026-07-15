@@ -188,7 +188,7 @@ This makes it the ideal starting point for incident response workflows because t
 
 Selecting the correct trigger ensures that every qualifying incident can automatically launch the Logic App without requiring any manual interaction.
 
-![Playbook Trigger](../SOAR-Screenshots/03.Playbook-Incident-Trigger.png)
+![Playbook Trigger](../SOAR-Screenshots/03.Playbook-With-Incident-Trigger.png)
 
 ---
 
@@ -210,7 +210,7 @@ Once deployed, Azure automatically provisions the Logic App infrastructure that 
 
 Unlike traditional scripts that must be hosted and maintained manually, Azure Logic Apps provide a fully managed automation platform capable of integrating with hundreds of Microsoft and third-party services.
 
-![Playbook Creation](../SOAR-Screenshots/04.Playbook-Creation.png)
+![Playbook Creation](../SOAR-Screenshots/04.Creation-Of-Playbook.png)
 
 ---
 
@@ -255,7 +255,7 @@ This action allows the Playbook to automatically notify the SOC analyst whenever
 
 Adding this action transforms the workflow from simply detecting incidents into actively responding to them.
 
-![Add Action](../SOAR-Screenshots/06.Add-Action.png)
+![Add Action](../SOAR-Screenshots/06.Add-An-Action-To-Playbook.png)
 
 ---
 
@@ -294,7 +294,7 @@ Even though this Playbook performs only a single action, it demonstrates how Azu
 
 Additional actions could easily be added later to create more advanced automated response workflows.
 
-![Email Connector](../SOAR-Screenshots/08.Email-Connector.png)
+![Email Connector](../SOAR-Screenshots/08.Email-Configured.png)
 
 ---
 
@@ -354,7 +354,7 @@ Using conditions is an important best practice because it prevents every inciden
 
 Instead, automation can be targeted toward specific attack scenarios, allowing organizations to create multiple response workflows for different types of security incidents.
 
-![Automation Rule Configuration](../SOAR-Screenshots/10.Automation-Rule-Configuration.png)
+![Automation Rule Configuration](../SOAR-Screenshots/10.Creation-Of-Automation.png)
 
 ---
 
@@ -392,7 +392,7 @@ Unlike previous testing performed during the SIEM implementation, this incident 
 
 This demonstrates the complete transition from passive monitoring to automated incident response.
 
-![Incident Triggered](../SOAR-Screenshots/12.Incident-Triggered.png)
+![Incident Triggered](../SOAR-Screenshots/12.Incidemt-Triggered.png)
 
 ---
 
