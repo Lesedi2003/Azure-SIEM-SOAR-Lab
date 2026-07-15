@@ -1,3 +1,4 @@
+➡️ **[Go to Part 1 – SIEM](../Part1-SIEM/README.md)**
 # 📌 Project Scenario
 
 Detecting a threat is only the beginning.
