@@ -203,7 +203,7 @@ The Automation Rule was configured to trigger whenever a new incident was create
 
 This completed the automation workflow by linking threat detection with automated response.
 
-![Automation Rule Configuration](../SOAR-Screenshots/10.Creation-Of-Automation.png)
+![Automation Rule Configuration](../SOAR-Screenshots/10.Creation-Of-Automation-Rule.png)
 
 ---
 
