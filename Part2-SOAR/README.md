@@ -68,39 +68,6 @@ Once Microsoft Sentinel creates an incident, the Automation Rule immediately lau
 
 ---
 
-# 🤖 From Detection to Response
-
-At the end of Part 1, Microsoft Sentinel was successfully detecting suspicious authentication activity and creating security incidents.
-
-While this demonstrates the core functionality of a SIEM platform, it also raises an important question:
-
-> **What happens after an incident is created?**
-
-Creating an incident alone does not stop an attack.
-
-Someone still needs to review the alert, determine its importance, notify the appropriate people, and begin the investigation.
-
-For a small number of incidents, these tasks can be completed manually. However, modern Security Operations Centers often process hundreds or even thousands of alerts every day.
-
-Performing repetitive actions manually for every incident not only consumes valuable time but also increases the likelihood of delays and human error.
-
-Microsoft Sentinel addresses this challenge through **Security Orchestration, Automation, and Response (SOAR).**
-
-SOAR enables organizations to automate routine response activities by combining Microsoft Sentinel with **Automation Rules** and **Azure Logic Apps**.
-
-Instead of waiting for an analyst to notice a newly created incident, Microsoft Sentinel can immediately execute a predefined workflow whenever specific detection criteria are met.
-
-In this project, that automated workflow consists of:
-
-- Detecting multiple failed RDP authentication attempts.
-- Creating a Microsoft Sentinel incident.
-- Automatically triggering a Logic App Playbook.
-- Sending an email notification to the SOC analyst.
-
-This creates a complete security workflow that extends beyond detection into automated response.
-
----
-
 # 🚨 Creating the Analytics Rule
 
 Everything within the SOAR workflow begins with an **Analytics Rule**.
