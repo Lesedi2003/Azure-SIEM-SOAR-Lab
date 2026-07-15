@@ -22,6 +22,7 @@ This project demonstrates the complete lifecycle of a modern Security Operations
 
 ![SIEM + SOAR Architecture](../SIEM-SOAR-Architecture/SIEM-SOAR-Architecture.png)
 
+
 ---
 
 # 📂 Project Structure
