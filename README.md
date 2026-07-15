@@ -20,7 +20,7 @@ This project demonstrates the complete lifecycle of a modern Security Operations
 
 # 🏗️ Overall Architecture
 
-![SIEM + SOAR Architecture](Architecture/SIEM-SOAR-Architecture.png)
+![SIEM + SOAR Architecture]((../SIEM-SOAR-Architecture/SIEM-SOAR-Architecture.png))
 
 ---
 
