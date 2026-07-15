@@ -20,7 +20,7 @@ This project demonstrates the complete lifecycle of a modern Security Operations
 
 # 🏗️ Overall Architecture
 
-![SIEM + SOAR Architecture](../SIEM-SOAR-Architecture/SIEM-SOAR-Architecture.png)
+![SIEM + SOAR Architecture](SIEM-SOAR-Architecture/SIEM-SOAR-Architecture.png)
 
 
 ---
@@ -42,6 +42,8 @@ Azure-SIEM-SOAR-Lab/
 │   ├── Part1-SIEM-Architecture.png
 │   ├── Part2-SOAR-Architecture.png
 │   └── SIEM-SOAR-Architecture.png
+│
+├──KQL-Queries/
 │
 ├── SIEM-Screenshots/
 │
