@@ -70,19 +70,13 @@ Once Microsoft Sentinel creates an incident, the Automation Rule immediately lau
 
 ## 🚨 Creating the Analytics Rule
 
-Everything within the SOAR workflow begins with an **Analytics Rule**.
+## Analytics Rule
 
-Analytics Rules continuously monitor incoming log data and compare it against predefined detection logic.
+The Analytics Rule created during the SIEM phase acts as the starting point for the automation process.
 
-When the specified conditions are satisfied, Microsoft Sentinel automatically generates a security incident.
+Whenever the rule detects suspicious authentication activity that matches the configured conditions, Microsoft Sentinel automatically creates a security incident.
 
-For this project, I reused the custom Analytics Rule developed during the SIEM implementation.
-
-The rule monitors Windows Security Events for repeated failed Remote Desktop authentication attempts (Event ID **4625**), which are commonly associated with brute-force attacks and password spraying.
-
-Rather than requiring an analyst to manually monitor authentication logs, Microsoft Sentinel continuously evaluates incoming events and automatically creates an incident whenever the configured detection threshold is exceeded.
-
-This incident becomes the starting point for the automated response workflow implemented throughout the remainder of this lab.
+This incident becomes the trigger that starts the automated response workflow.
 
 ![Analytics Rule](../SOAR-Screenshots/01.Analytics-Rule.png)
 
@@ -90,57 +84,23 @@ This incident becomes the starting point for the automated response workflow imp
 
 ## 🚨 Security Incident Created
 
-After deploying the Analytics Rule, I generated multiple failed Remote Desktop login attempts against the honeypot virtual machine.
+To test the automation, additional failed authentication attempts were generated against the honeypot virtual machine.
 
-Once the detection threshold configured within the Analytics Rule was reached, Microsoft Sentinel automatically created a new security incident.
+Once the Analytics Rule detected that the configured conditions had been met, Microsoft Sentinel automatically created a new security incident.
 
-Unlike the individual Windows Security Events examined during Part 1, an incident represents a higher-level security event that groups together related alerts requiring investigation.
-
-Incidents provide analysts with a centralized location for reviewing suspicious activity, assigning ownership, tracking investigation progress, and coordinating response actions.
-
-More importantly for this phase of the project, every newly created incident can also serve as the trigger for automated response workflows.
-
-This capability allows Microsoft Sentinel to move beyond simply detecting threats and begin responding to them automatically.
+This confirmed that the detection logic was working correctly and that the incident was ready to be passed to the automated response workflow.
 
 ![Incident Created](../SOAR-Screenshots/02.Incident-Created.png)
 
 ---
 
-## ⚙️ Building the Logic App Playbook
-
-With Microsoft Sentinel successfully generating security incidents, the next step was to automate the response.
-
-While an analyst could manually monitor the Incidents page and react whenever a new alert appeared, Microsoft Sentinel also provides the ability to respond automatically using **Playbooks**.
-
-A Playbook is an automated workflow built using **Azure Logic Apps**. It allows Microsoft Sentinel to perform predefined actions whenever specific security events occur.
-
-Depending on the organization's requirements, a Playbook can perform a wide range of tasks, including:
-
-- Sending email or Microsoft Teams notifications
-- Creating IT service tickets
-- Enriching incidents with threat intelligence
-- Assigning incidents to analysts
-- Blocking malicious IP addresses
-- Disabling compromised user accounts
-- Isolating infected endpoints through Microsoft Defender
-
-For this project, the Playbook was configured to automatically send an email notification whenever Microsoft Sentinel created a new security incident.
-
-Although simple, this demonstrates the fundamental principles of Security Orchestration, Automation, and Response (SOAR), allowing repetitive response tasks to be performed automatically.
-
----
-
 ## ▶️ Creating the Playbook
 
-Microsoft Sentinel provides several Playbook templates depending on when the automation should execute.
+With Microsoft Sentinel successfully creating incidents, the next step was to automate the response.
 
-Since the goal of this project was to automate actions after Microsoft Sentinel created a security incident, I selected the **Playbook with Incident Trigger** template.
+Microsoft Sentinel provides several Playbook templates depending on when the automation should run. Since the goal was to respond whenever a new incident was created, I selected the **Playbook with an Incident Trigger** template.
 
-Unlike an Alert Trigger, which executes when an alert is generated, the Incident Trigger activates only after Microsoft Sentinel has created an incident.
-
-This makes it the ideal starting point for incident response workflows because the security event has already been detected, grouped, and classified by Microsoft Sentinel.
-
-Selecting the correct trigger ensures that every qualifying incident can automatically launch the Logic App without requiring any manual interaction.
+This template automatically starts the workflow whenever Microsoft Sentinel creates a qualifying incident, making it the ideal starting point for incident response automation.
 
 ![Playbook Trigger](../SOAR-Screenshots/03.Playbook-With-Incident-Trigger.png)
 
@@ -148,21 +108,13 @@ Selecting the correct trigger ensures that every qualifying incident can automat
 
 ## 🏗️ Creating the Logic App
 
-After selecting the appropriate template, the Logic App Playbook was created within Azure.
+After selecting the appropriate template, the Playbook was created as an Azure Logic App.
 
-During deployment, several configuration options were specified, including:
+During this step, I configured the basic deployment settings, including the Azure subscription, resource group, region, and Playbook name.
 
-- Azure Subscription
-- Resource Group
-- Region
-- Playbook Name
-- Log Analytics Workspace
+Once these settings were configured, Azure deployed the Logic App and prepared it for the automation workflow that would be built in the following steps.
 
-These settings determine where the Logic App is deployed and how it integrates with the existing Microsoft Sentinel environment.
-
-Once deployed, Azure automatically provisions the Logic App infrastructure that will later execute the automated response workflow.
-
-Unlike traditional scripts that must be hosted and maintained manually, Azure Logic Apps provide a fully managed automation platform capable of integrating with hundreds of Microsoft and third-party services.
+At this stage, the Playbook had been created but no response actions had been added yet.
 
 ![Playbook Creation](../SOAR-Screenshots/04.Creation-Of-Playbook.png)
 
@@ -170,19 +122,15 @@ Unlike traditional scripts that must be hosted and maintained manually, Azure Lo
 
 ## 🧩 Understanding the Logic App Designer
 
-Once deployment completed, Azure opened the **Logic App Designer**.
+Once the Playbook was created, Azure opened the **Logic App Designer**.
 
-The Logic App Designer provides a visual interface for building automated workflows.
+This is where the automation workflow is built.
 
-Instead of writing code, workflows are created by connecting individual actions together, allowing complex automation processes to be designed using a graphical interface.
+Because I selected the **Playbook with an Incident Trigger** template, Azure automatically added the **Microsoft Sentinel Incident Trigger** as the first step in the workflow.
 
-Because the **Playbook with Incident Trigger** template was selected, Azure automatically added the **Microsoft Sentinel Incident Trigger** as the first component within the workflow.
+You can think of this trigger as something that is constantly waiting. As soon as Microsoft Sentinel creates a new incident, it activates the Playbook and begins executing every action that follows.
 
-This trigger continuously waits for Microsoft Sentinel to create a new incident.
-
-Whenever a qualifying incident is generated, the trigger activates and begins executing every action that follows within the Playbook.
-
-At this stage, the workflow contained only the trigger, ready for additional automated response actions to be added.
+At this stage, the workflow only contained the trigger. The next step was to define what action the Playbook should perform once it was triggered.
 
 ![Logic App Designer](../SOAR-Screenshots/05.Logic-App-Designer.png)
 
@@ -190,24 +138,13 @@ At this stage, the workflow contained only the trigger, ready for additional aut
 
 ## ➕ Adding an Automated Response Action
 
-With the trigger successfully configured, the next step was defining how the Playbook should respond whenever it received a new incident.
+With the trigger in place, the next step was deciding what should happen whenever a new incident was created.
 
-Azure Logic Apps includes hundreds of built-in connectors that allow workflows to interact with Microsoft services as well as third-party platforms.
+Azure Logic Apps provides hundreds of built-in connectors that can interact with Microsoft services as well as third-party platforms. This allows organizations to automate a wide range of response actions depending on their requirements.
 
-Some commonly used security automation actions include:
+For this lab, I chose to add a **Send an Email (V2)** action using the Microsoft Outlook connector.
 
-- Sending email notifications
-- Posting messages to Microsoft Teams
-- Creating ServiceNow incidents
-- Executing Azure Functions
-- Querying threat intelligence platforms
-- Updating Microsoft Sentinel incidents
-
-For this lab, I selected **Send an email (V2)** using the Microsoft Outlook connector.
-
-This action allows the Playbook to automatically notify the SOC analyst whenever Microsoft Sentinel creates a new security incident.
-
-Adding this action transforms the workflow from simply detecting incidents into actively responding to them.
+This demonstrates one of the key ideas behind SOAR: once an incident is detected, the response can begin automatically without waiting for someone to manually intervene.
 
 ![Add Action](../SOAR-Screenshots/06.Add-An-Action-To-Playbook.png)
 
@@ -215,17 +152,13 @@ Adding this action transforms the workflow from simply detecting incidents into 
 
 ## 📧 Configuring the Email Notification
 
-After selecting the Outlook connector, the email action was configured with the required information.
+After adding the Outlook connector, the next step was configuring the email that would be sent whenever the Playbook was triggered.
 
-The notification includes a subject and message informing the recipient that Microsoft Sentinel has detected suspicious activity and created a new incident.
+For this lab, I kept the email simple by adding a subject and a message informing the SOC analyst that Microsoft Sentinel had created a new security incident.
 
-Although the email used in this project contains a simple notification message, Logic Apps also supports **Dynamic Content**.
+In a real-world environment, the email could also include dynamic information such as the incident name, severity, IP address, affected host, or the time the incident was created.
 
-Dynamic Content allows information from the incident itself—such as the incident title, severity, description, owner, or timestamp—to be automatically inserted into the email.
-
-This enables organizations to deliver rich incident notifications containing detailed investigation information without requiring analysts to manually compile it.
-
-For demonstration purposes, a simplified notification was used to verify that the Playbook executed successfully.
+For this project, the main objective was to verify that the Playbook could successfully notify an analyst whenever a new incident was detected.
 
 ![Email Action](../SOAR-Screenshots/07.Send-Email-Action.png)
 
@@ -244,69 +177,31 @@ This completed the basic response workflow.
 
 Whenever Microsoft Sentinel generates a qualifying incident, the trigger activates, the workflow executes automatically, and the configured email notification is sent to the SOC analyst.
 
-Even though this Playbook performs only a single action, it demonstrates how Azure Logic Apps orchestrate security automation through a sequence of connected tasks.
-
-Additional actions could easily be added later to create more advanced automated response workflows.
-
 ![Email Connector](../SOAR-Screenshots/08.Email-Configured.png)
 
 ---
 
 ## ✅ Playbook Completed
 
-After configuring the workflow, the Logic App Playbook was successfully published.
+After configuring the email action, the Playbook was complete and ready to be used.
 
-The completed Playbook now contains:
+At this point, the workflow contained everything needed to respond automatically to new Microsoft Sentinel incidents. Whenever an incident is created, the Playbook will start, execute the configured actions, and send an email notification to the SOC analyst.
 
-- Microsoft Sentinel Incident Trigger
-- Outlook Send Email (V2) Action
-
-At this stage, the Playbook was fully functional and capable of executing automatically whenever it received a security incident from Microsoft Sentinel.
-
-However, simply creating the Playbook does not cause it to run automatically.
-
-Microsoft Sentinel still needs a mechanism to determine **when** the Playbook should execute.
-
-This is achieved through an **Automation Rule**, which links newly created incidents to the Logic App Playbook and launches the workflow whenever the specified conditions are met.
-
-The next section focuses on creating that Automation Rule and completing the automated incident response process.
+The next step was connecting this Playbook to Microsoft Sentinel using an Automation Rule.
 
 ![Completed Playbook](../SOAR-Screenshots/09.Playbook-Created.png)
 
 ---
 
-# 🔄 Automating Incident Response
-
-At this stage, the Playbook was fully configured and capable of sending an email notification.
-
-However, simply creating a Playbook does not automatically connect it to Microsoft Sentinel.
-
-The Playbook exists as an independent Logic App until Microsoft Sentinel is instructed **when** it should be executed.
-
-This is the role of an **Automation Rule**.
-
-Automation Rules act as the bridge between Microsoft Sentinel and Azure Logic Apps. They continuously monitor newly created incidents and determine whether a Playbook should be executed based on conditions defined by the analyst.
-
-This allows organizations to automate repetitive response tasks while ensuring that only relevant incidents trigger automated workflows.
-
----
-
 ## ⚙️ Creating the Automation Rule
 
-To connect Microsoft Sentinel with the Logic App Playbook, I created a new **Automation Rule**.
+With the Playbook ready, the final step was to connect it to Microsoft Sentinel.
 
-The rule was configured to execute whenever a new security incident matching my custom Analytics Rule was created.
+This was done by creating an **Automation Rule**, which acts as the bridge between a security incident and the Playbook.
 
-During configuration, I specified:
+The Automation Rule was configured to trigger whenever a new incident was created. Once the trigger conditions were met, Microsoft Sentinel would automatically launch the Playbook without requiring any manual action from the analyst.
 
-- A descriptive Automation Rule name.
-- The trigger event (**When Incident is Created**).
-- A condition limiting execution to incidents generated by the custom Analytics Rule.
-- The action to execute the Logic App Playbook.
-
-Using conditions is an important best practice because it prevents every incident within Microsoft Sentinel from launching the same Playbook.
-
-Instead, automation can be targeted toward specific attack scenarios, allowing organizations to create multiple response workflows for different types of security incidents.
+This completed the automation workflow by linking threat detection with automated response.
 
 ![Automation Rule Configuration](../SOAR-Screenshots/10.Creation-Of-Automation.png)
 
@@ -314,17 +209,11 @@ Instead, automation can be targeted toward specific attack scenarios, allowing o
 
 ## ✅ Automation Rule Enabled
 
-After reviewing the configuration, the Automation Rule was successfully created and enabled.
+Once the Automation Rule was created and enabled, Microsoft Sentinel continuously monitored for new incidents that matched the configured trigger.
 
-From this point onward, Microsoft Sentinel continuously monitors incoming incidents.
+Whenever a qualifying incident was created, the Automation Rule automatically launched the Playbook, allowing the response process to begin immediately without any manual intervention.
 
-Whenever a new incident satisfies the configured conditions, Microsoft Sentinel automatically launches the associated Logic App Playbook without requiring any manual intervention.
-
-This completes the connection between detection and response.
-
-Instead of waiting for a SOC analyst to notice a new incident, Microsoft Sentinel immediately begins executing the predefined response workflow.
-
-This demonstrates one of the primary advantages of SOAR—reducing response times through automation.
+With the automation now in place, the only thing left to do was generate another security incident and verify that the entire workflow operated as expected.
 
 ![Automation Rule Created](../SOAR-Screenshots/11.Automation-Rule-Created.png)
 
@@ -332,82 +221,25 @@ This demonstrates one of the primary advantages of SOAR—reducing response time
 
 ## 🧪 Testing the Automated Workflow
 
-With the Analytics Rule, Playbook, and Automation Rule all configured, the final step was to verify that the complete workflow functioned as expected.
+With the Automation Rule enabled, the final step was to test the complete workflow.
 
-To perform the test, I generated another series of failed Remote Desktop authentication attempts against the honeypot virtual machine using invalid credentials.
+To do this, additional failed authentication attempts were generated against the honeypot virtual machine. Once the Analytics Rule detected the activity, Microsoft Sentinel automatically created a new security incident.
 
-At approximately the same time, additional failed authentication attempts originating from external internet scanners were also recorded against the virtual machine.
-
-These authentication attempts were collected by the Azure Monitor Agent, forwarded to the Log Analytics Workspace, and analyzed by Microsoft Sentinel.
-
-Once the number of failed logon events exceeded the threshold configured within the Analytics Rule, Microsoft Sentinel automatically generated a new security incident.
-
-Unlike previous testing performed during the SIEM implementation, this incident now triggered an automated response workflow without requiring any manual action.
-
-This demonstrates the complete transition from passive monitoring to automated incident response.
+As soon as the incident was created, the Automation Rule triggered the Playbook exactly as configured, demonstrating that the detection and response workflow was functioning correctly from start to finish.ive monitoring to automated incident response.
 
 ![Incident Triggered](../SOAR-Screenshots/12.Incidemt-Triggered.png)
 
 ---
 
-## 🔍 Understanding What Happened
-
-Although only a few seconds passed, several Azure services worked together behind the scenes to complete the automated response process.
-
-The workflow followed these steps:
-
-1. Multiple failed RDP authentication attempts were recorded by Windows.
-2. Azure Monitor Agent forwarded the Security Events to the Log Analytics Workspace.
-3. Microsoft Sentinel analyzed the incoming logs using the configured Analytics Rule.
-4. The Analytics Rule detected suspicious authentication activity.
-5. Microsoft Sentinel created a new security incident.
-6. The Automation Rule detected the newly created incident.
-7. The Automation Rule launched the Logic App Playbook.
-8. The Logic App executed the configured email notification.
-
-All of these actions occurred automatically without requiring a SOC analyst to manually monitor the environment.
-
-This demonstrates how SIEM and SOAR technologies complement one another.
-
-While the SIEM component is responsible for collecting, analyzing, and detecting suspicious activity, the SOAR component immediately responds by executing predefined workflows.
-
-Instead of simply identifying an attack, the environment is now capable of reacting to it automatically.
-
----
-
-# ✅ Validating the Automated Response
-
-Successfully creating the Analytics Rule, Automation Rule, and Logic App Playbook was only part of the objective.
-
-To demonstrate that the entire SOAR workflow was functioning correctly, it was necessary to verify that Microsoft Sentinel had successfully executed the Playbook after creating a security incident.
-
-Azure Logic Apps records the execution history of every Playbook, providing detailed information about each workflow run.
-
-By reviewing the Run History, it is possible to confirm:
-
-- Whether the Playbook was triggered.
-- When the Playbook executed.
-- Whether each step completed successfully.
-- If any errors occurred during execution.
-
-This provides valuable troubleshooting information while also confirming that the automation workflow performed exactly as expected.
-
----
-
 ## 📈 Reviewing the Playbook Run History
 
-After generating another security incident, I opened the Logic App **Run History**.
+Azure Logic Apps keeps a record of every time a Playbook is executed.
 
-The Run History showed a successful execution of the Playbook immediately after Microsoft Sentinel created the incident.
+After the security incident was created, the Playbook automatically started and completed all of its configured actions successfully.
 
-The successful run confirms that:
+The **Run History** confirms that the Automation Rule successfully triggered the Playbook and that the workflow executed without any errors.
 
-- Microsoft Sentinel detected the suspicious activity.
-- The Automation Rule launched the Playbook.
-- Azure Logic Apps executed the workflow successfully.
-- The configured response action completed without errors.
-
-This provides clear evidence that the automated response process is functioning correctly.
+This provides clear evidence that the automated response process was working as expected.
 
 ![Playbook Run History](../SOAR-Screenshots/13.Playbook-Run-History.png)
 
@@ -415,17 +247,19 @@ This provides clear evidence that the automated response process is functioning 
 
 ## 📧 Verifying the Email Notification
 
-The final stage of the workflow was confirming that the email notification had been successfully delivered.
+The final step in the workflow was the successful delivery of the email notification.
 
-Shortly after the Playbook executed, an email was received from the configured Outlook account.
+Receiving the email confirmed that the Playbook had executed successfully after Microsoft Sentinel created the security incident.
 
-Receiving the email confirmed that the entire response workflow had completed successfully.
+This completed the end-to-end automation process:
 
-Unlike manually monitoring Microsoft Sentinel for new incidents, the Playbook automatically notified the SOC analyst as soon as suspicious authentication activity was detected.
+- Suspicious authentication activity was detected.
+- Microsoft Sentinel created a security incident.
+- The Automation Rule automatically triggered the Playbook.
+- The Playbook executed the configured actions.
+- An email notification was sent to the SOC analyst.
 
-Although this project uses a simple email notification, the same workflow could easily be extended to notify security teams through Microsoft Teams, create ServiceNow tickets, enrich incidents with threat intelligence, or perform automated containment actions.
-
-This demonstrates how Microsoft Sentinel can significantly reduce the time between threat detection and analyst awareness.
+This demonstrates how Microsoft Sentinel and Azure Logic Apps can work together to automate incident response, reducing manual effort and enabling security analysts to respond more quickly to potential threats.
 
 ![Email Notification](../SOAR-Screenshots/14.Email-Notification.png)
 
@@ -489,8 +323,6 @@ Before completing this phase of the project, I understood Microsoft Sentinel pri
 Building the SOAR environment helped me understand that detection is only one part of the incident response process.
 
 I learned how Microsoft Sentinel works together with Azure Logic Apps to automate repetitive security tasks, reducing the time between detection and response.
-
-One of the most valuable lessons from this project was understanding how each Azure service contributes to the overall workflow.
 
 Rather than viewing Analytics Rules, Incidents, Automation Rules, and Playbooks as separate features, I now understand how they work together to create an automated response pipeline.
 
