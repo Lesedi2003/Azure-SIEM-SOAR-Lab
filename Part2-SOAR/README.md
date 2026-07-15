@@ -272,41 +272,42 @@ At the completion of this project, the environment was capable of automatically 
 The following workflow summarizes the complete security process implemented throughout both the SIEM and SOAR phases of this project.
 
 ```text
-Internet
-      │
-      ▼
+      Internet
+        │
+        ▼
 Failed RDP Login Attempts
-      │
-      ▼
+        │
+        ▼
 Windows Server Honeypot
-      │
-      ▼
+        │
+        ▼
 Windows Security Events
-      │
-      ▼
+        │
+        ▼
 Azure Monitor Agent (AMA)
-      │
-      ▼
+        │
+        ▼
 Log Analytics Workspace
-      │
-      ▼
+        │
+        ▼
 Microsoft Sentinel
-      │
+        │
+        ▼
 Analytics Rule Detection
-      │
-      ▼
+        │
+        ▼
 Security Incident Created
-      │
-      ▼
-Automation Rule
-      │
-      ▼
+        │
+        ▼
+ Automation Rule
+        │
+        ▼
 Logic App Playbook
-      │
-      ▼
+        │
+        ▼
 Send Email (Outlook V2)
-      │
-      ▼
+        │
+        ▼
 SOC Analyst Notification
 ```
 
@@ -334,22 +335,22 @@ This project reinforced the importance of automation within modern Security Oper
 
 # 🏁 Conclusion
 
-In this phase of the project, Microsoft Sentinel was extended beyond traditional Security Information and Event Management (SIEM) capabilities by implementing Security Orchestration, Automation, and Response (SOAR).
+This project demonstrates the complete lifecycle of a cloud-native Security Operations Center (SOC) using Microsoft Azure.
 
-A custom Analytics Rule detected repeated failed Remote Desktop authentication attempts and automatically generated a Microsoft Sentinel incident.
+In the first phase, Microsoft Sentinel was configured as a SIEM solution to collect Windows Security Events, detect suspicious authentication activity, investigate logs using Kusto Query Language (KQL), enrich data with a GeoIP Watchlist, and visualize attack activity through a Workbook dashboard.
 
-An Automation Rule was then configured to monitor newly created incidents and launch an Azure Logic App Playbook whenever the specified detection criteria were met.
+In the second phase, the environment was extended with SOAR capabilities. An Analytics Rule generated security incidents whenever suspicious activity was detected, while an Automation Rule automatically triggered an Azure Logic App (Playbook) that sent an email notification to the SOC analyst.
 
-The Playbook successfully executed an automated email notification, demonstrating how Microsoft Sentinel can orchestrate response actions without requiring manual analyst intervention.
+Although this lab used a simple email notification as the automated response, the same workflow could easily be expanded to perform more advanced actions, such as creating IT service tickets, notifying Microsoft Teams, isolating compromised devices, disabling user accounts, or integrating with other security platforms.
 
-Together with the SIEM implementation completed in Part 1, this project demonstrates the complete lifecycle of a modern cloud-native Security Operations Center—from collecting Windows Security Events and detecting suspicious activity to automatically responding through Microsoft Sentinel SOAR.
+Overall, this project provided practical, hands-on experience with Microsoft Sentinel, Azure Monitor, Log Analytics Workspace, Kusto Query Language (KQL), Analytics Rules, Automation Rules, Azure Logic Apps, and automated incident response.
 
-While the automation implemented in this lab focused on email notification, the same architecture can be extended to perform more advanced response actions such as threat intelligence enrichment, endpoint isolation, user account remediation, and integration with external security platforms.
-
-This project provided practical experience implementing Microsoft Sentinel SIEM and SOAR capabilities using Microsoft Azure, Azure Monitor, Log Analytics Workspace, Analytics Rules, Automation Rules, Azure Logic Apps, and Outlook integration.
+More importantly, it demonstrated how these Azure services work together to move from **threat detection** to **automated response**, creating a complete end-to-end SOC workflow.
 
 ---
 
+➡️ **Return to the main project:
 ➡️ **Return to the main project:** [Azure SIEM & SOAR Lab](../README.md)
+
 
 ➡️ **View the complete SIEM + SOAR Architecture:** [Combined Architecture](../Architecture/SIEM-SOAR-Architecture.png)
