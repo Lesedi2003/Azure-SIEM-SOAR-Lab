@@ -1,4 +1,4 @@
-# 🛡️ Building a Cloud SOC with Microsoft Sentinel (SIEM & SOAR)
+# 🛡️ Azure-SIEM-SOAR-Lab
 
 ## 📖 Overview
 
@@ -231,7 +231,7 @@ I hope it provides useful insight into how Microsoft Sentinel can be used to bui
 
 # 👨‍💻 Author
 
-**Lesedi Mogoane**
+**Lesedi**
 
 - Microsoft Certified: SC-200 – Security Operations Analyst Associate
 - Microsoft Certified: SC-300 – Identity and Access Administrator Associate
