@@ -18,7 +18,6 @@ In this phase of the project, I extended the SIEM environment by implementing a 
 
 When Microsoft Sentinel detects multiple failed Remote Desktop Protocol (RDP) authentication attempts and creates an incident, an Automation Rule automatically launches a Logic App Playbook that sends an email notification to the SOC analyst.
 
-Although this lab demonstrates a simple notification workflow, the same architecture can be expanded to automatically perform actions such as enriching incidents with threat intelligence, assigning incidents to analysts, isolating compromised endpoints, disabling user accounts, or integrating with external security platforms.
 
 ---
 
